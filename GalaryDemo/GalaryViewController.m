@@ -88,14 +88,14 @@
     
     [activity startAnimating];
     
-    [[MediaLoader sharedInstance] checkPhotoPermission:^(NSString* error) {
+    [[MediaLoader sharedInstance] checkPermission:^(NSError* error) {
         
         if (error) {
             
-            [self showMessage:@"Please! Enable to use" withTitle:error];
+            [self showMessage:@"Please! Enable to use" withTitle:error.localizedDescription];
         } else {
             
-            [[MediaLoader sharedInstance] getListMediaFromAsset:^(ThreadSafeForMutableArray* mediaItems) {
+            [[MediaLoader sharedInstance] getMediaItems:^(ThreadSafeForMutableArray* mediaItems) {
                 
                 [_galaryImageDataSource setupData:mediaItems];
               

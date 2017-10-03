@@ -16,9 +16,9 @@
 + (instancetype)sharedInstance;
 
 #pragma mark - checkPermissionPhoto
-- (void)checkPhotoPermission:(void(^)(NSString *))completion;
+- (void)checkPermission:(void(^)(NSError *))completion;
 
-#pragma mark - getListMediaFromAsset
-- (void)getListMediaFromAsset:(void(^)(ThreadSafeForMutableArray *))completion;
+#pragma mark - getMediaItems
+- (void)getMediaItems:(void(^)(ThreadSafeForMutableArray *))completion;
 
 @end

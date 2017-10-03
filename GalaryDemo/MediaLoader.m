@@ -15,6 +15,7 @@
 @property (nonatomic) ThreadSafeForMutableArray* mediaArray;
 @property (nonatomic) dispatch_queue_t photoPermissionQueue;
 @property (nonatomic) dispatch_queue_t mediaLoaderQueue;
+@property (nonatomic)  BOOL isSupportiOS8;
 @property (nonatomic) int maxloaderItems;
 
 @end
@@ -43,6 +44,7 @@
     if (self) {
         
         _maxloaderItems = 70;
+        _isSupportiOS8 = iOS_VERSION_GREATER_THAN_OR_EQUAL_TO(8.0);
         _mediaArray = [[ThreadSafeForMutableArray alloc] init];
         _mediaLoaderQueue = dispatch_queue_create("MEDIA_LOADER_QUEUE", DISPATCH_QUEUE_SERIAL);
         _photoPermissionQueue = dispatch_queue_create("PHOTO_PERMISSION_QUEUE", DISPATCH_QUEUE_SERIAL);
@@ -51,9 +53,45 @@
     return self;
 }
 
-#pragma mark - getListMediaFromAsset
+#pragma mark - checkPermission
 
-- (void)getListMediaFromAsset:(void(^)(ThreadSafeForMutableArray *))completion {
+- (void)checkPermission:(void(^)(NSError *))completion {
+    
+    if (_isSupportiOS8) {
+        
+        [self checkPhotoPermission:^(NSError* error) {
+            
+            if(completion) {
+                
+                completion(error);
+            }
+        }];
+    } else {
+        // less than ios 8
+    }
+}
+
+#pragma mark - getMediaItems
+
+- (void)getMediaItems:(void(^)(ThreadSafeForMutableArray *))completion {
+    
+    if (_isSupportiOS8) {
+        
+        [self getMediaItemsFromPHAsset:^(ThreadSafeForMutableArray* mediaItems) {
+            
+            if (completion) {
+                
+                completion(mediaItems);
+            }
+        }];
+    } else {
+        // less than ios 8
+    }
+}
+
+#pragma mark - getListMediaFromPHAsset
+
+- (void)getMediaItemsFromPHAsset:(void(^)(ThreadSafeForMutableArray *))completion {
     
     dispatch_async(_mediaLoaderQueue,^{
      
@@ -97,7 +135,7 @@
 
 #pragma mark - checkPermissionPhoto
 
-- (void)checkPhotoPermission:(void(^)(NSString *))completion {
+- (void)checkPhotoPermission:(void(^)(NSError *))completion {
     
     dispatch_async(_photoPermissionQueue, ^ {
         
@@ -120,7 +158,7 @@
                 
                 dispatch_async(dispatch_get_main_queue(), ^ {
                     
-                    completion(@"PHAuthorizationStatusDenied");
+                    completion([NSError errorWithDomain:@"" code:PHAuthorizationStatusDenied userInfo:nil]);
                 });
             }
         } else if (status == PHAuthorizationStatusNotDetermined) {
@@ -143,7 +181,7 @@
                         
                         dispatch_async(dispatch_get_main_queue(), ^ {
                             
-                            completion(@"PHAuthorizationStatusDenied");
+                            completion([NSError errorWithDomain:@"" code:PHAuthorizationStatusDenied userInfo:nil]);
                         });
                     }
                 }
@@ -154,7 +192,7 @@
                 
                 dispatch_async(dispatch_get_main_queue(), ^ {
                     
-                    completion(@"PHAuthorizationStatusRestricted");
+                    completion([NSError errorWithDomain:@"" code:PHAuthorizationStatusRestricted userInfo:nil]);
                 });
             }
         }

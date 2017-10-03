@@ -10,7 +10,7 @@
 #define Constants_h
 
 
-#define iOS_VERSION_GREATER_THAN_OR_EQUAL_TO(version) [[[UIDevice currentDevice] systemVersion] floatValue] <= version
+#define iOS_VERSION_GREATER_THAN_OR_EQUAL_TO(version) [[[UIDevice currentDevice] systemVersion] floatValue] >= version
 
 // 30M
 #define MAX_CACHE_SIZE 30*1024*1024
@@ -70,3 +70,12 @@ typedef enum {
    MediaImageType = 1,
    MediaVideoType = -1
 } MediaType;
+
+typedef enum {
+    
+    PHAuthStatusDenied = 1,
+    PHAuthStatusRestricted = 2
+} PHAuthStatus;
+
+
+

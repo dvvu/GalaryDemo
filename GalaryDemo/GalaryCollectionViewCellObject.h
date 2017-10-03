@@ -20,7 +20,7 @@
 
 @interface GalaryCollectionViewCellObject : NSObject <GalaryCollectionViewCellObjectProtocol>
 
-@property (nonatomic, copy) NSString* identifier;
+@property (nonatomic) NSString* identifier;
 @property (nonatomic) double videoDuration;
 @property (nonatomic) MediaType mediaType;
 
